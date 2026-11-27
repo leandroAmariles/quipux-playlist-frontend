@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.0](https://github.com/leandroAmariles/quipux-playlist-frontend/compare/v0.1.0...v0.2.0) (2026-11-27)
+
+
+### Features
+
+* **HU-14:** show AI recommendations on the playlist detail ([e4365b2](https://github.com/leandroAmariles/quipux-playlist-frontend/commit/e4365b2a20edfc85419afe598328e2ac1b02671e))
+* **HU-14:** show recommendations on the playlist detail ([d09a3c8](https://github.com/leandroAmariles/quipux-playlist-frontend/commit/d09a3c891ea747e6646e5258a52c0eb0862bd3a8))
+
 ## 0.1.0 (2026-11-27)
 
 
