@@ -60,3 +60,41 @@ jobs:
         env:
           REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: docker push "${IMAGE}"
+
+  update-infra:
+    needs: [release-please, publish]
+    if: needs.release-please.outputs.release_created == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    env:
+      VERSION: ${{ needs.release-please.outputs.version }}
+      GH_TOKEN: ${{ secrets.INFRA_PR_TOKEN }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: leandroAmariles/quipux-playlist-infra
+          ref: main
+          token: ${{ secrets.INFRA_PR_TOKEN }}
+          persist-credentials: true
+      - run: |
+          cd k8s
+          kustomize edit set image "ghcr.io/leandroamariles/quipux-playlist-frontend=ghcr.io/leandroamariles/quipux-playlist-frontend:${VERSION}"
+          cd ..
+          if git diff --quiet k8s/kustomization.yaml; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          BRANCH="chore/deploy-frontend"
+          git fetch origin "+refs/heads/${BRANCH}:refs/remotes/origin/${BRANCH}" || true
+          git checkout -B "${BRANCH}"
+          git add k8s/kustomization.yaml
+          git commit -m "chore(deploy): bump frontend image to ${VERSION}"
+          git push --force-with-lease origin "${BRANCH}"
+          if [ -n "$(gh pr list --repo leandroAmariles/quipux-playlist-infra --head "${BRANCH}" --state open --json number --jq '.[0].number')" ]; then
+            gh pr edit "${BRANCH}" --repo leandroAmariles/quipux-playlist-infra --title "chore(deploy): bump frontend image to ${VERSION}" --body "Update frontend image tag to ${VERSION}."
+          else
+            gh pr create --repo leandroAmariles/quipux-playlist-infra --base main --head "${BRANCH}" --title "chore(deploy): bump frontend image to ${VERSION}" --body "Update frontend image tag to ${VERSION}."
+          fi
