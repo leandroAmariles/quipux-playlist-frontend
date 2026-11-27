@@ -1,0 +1,25 @@
+<form class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <h1>{{ text.LOGIN_TITLE }}</h1>
+
+  <label>
+    {{ text.USERNAME }}
+    <input type="text" formControlName="username" autocomplete="username" />
+  </label>
+  @if (attempted() && form.controls.username.invalid) {
+    <p class="error">{{ text.USERNAME_REQUIRED }}</p>
+  }
+
+  <label>
+    {{ text.PASSWORD }}
+    <input type="password" formControlName="password" autocomplete="current-password" />
+  </label>
+  @if (attempted() && form.controls.password.invalid) {
+    <p class="error">{{ text.PASSWORD_REQUIRED }}</p>
+  }
+
+  @if (error(); as message) {
+    <p class="error" role="alert">{{ message }}</p>
+  }
+
+  <button type="submit" [disabled]="submitting()">{{ text.SIGN_IN }}</button>
+</form>

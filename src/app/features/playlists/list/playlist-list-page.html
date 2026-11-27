@@ -1,0 +1,49 @@
+<div class="heading">
+  <h1>{{ text.PLAYLISTS_TITLE }}</h1>
+  @if (isAdmin()) {
+    <a class="button create" [routerLink]="route.PLAYLIST_NEW">{{ text.CREATE_PLAYLIST }}</a>
+  }
+</div>
+
+@if (notice(); as message) {
+  <p class="error" role="alert">{{ message }}</p>
+}
+
+@switch (state()) {
+  @case (viewState.LOADING) {
+    <p class="muted" role="status">{{ text.LOADING }}</p>
+  }
+  @case (viewState.EMPTY) {
+    <p class="muted">{{ text.NO_PLAYLISTS }}</p>
+  }
+  @case (viewState.ERROR) {
+    <p class="error" role="alert">{{ error() }}</p>
+    <button type="button" class="retry" (click)="load()">{{ text.RETRY }}</button>
+  }
+  @case (viewState.READY) {
+    <ul>
+      @for (playlist of playlists(); track playlist.name) {
+        <li class="card">
+          <div>
+            <a [routerLink]="route.PLAYLIST_DETAIL" [queryParams]="{ name: playlist.name }">{{
+              playlist.name
+            }}</a>
+            @if (playlist.description) {
+              <p class="muted">{{ playlist.description }}</p>
+            }
+          </div>
+          @if (isAdmin()) {
+            <button
+              type="button"
+              class="danger delete"
+              [disabled]="deleting()"
+              (click)="remove(playlist)"
+            >
+              {{ text.DELETE }}
+            </button>
+          }
+        </li>
+      }
+    </ul>
+  }
+}

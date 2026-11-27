@@ -1,0 +1,15 @@
+{
+  "unknownGenre": {
+    "status": 400,
+    "title": "Bad Request",
+    "detail": "A song genre is not in the genre catalog",
+    "code": "PLAYLIST_GE_00001"
+  },
+  "nameTaken": {
+    "status": 409,
+    "title": "Conflict",
+    "detail": "A playlist with that name already exists",
+    "code": "PLAYLIST_GE_00003"
+  },
+  "generalStatuses": [0, 500, 502]
+}

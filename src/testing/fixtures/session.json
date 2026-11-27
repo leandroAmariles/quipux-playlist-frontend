@@ -1,0 +1,9 @@
+{
+  "admin": { "sub": "admin", "role": "ADMIN" },
+  "user": { "sub": "user", "role": "USER" },
+  "accented": { "sub": "José Ñandú", "role": "USER" },
+  "unknownRole": { "sub": "guest", "role": "AUDITOR" },
+  "lifetimeSeconds": 1800,
+  "credentials": { "username": "admin", "password": "not-a-real-password" },
+  "unreadableTokens": ["", "abc", "a.b.c", "a.bm90LWpzb24.c"]
+}
