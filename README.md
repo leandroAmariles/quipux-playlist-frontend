@@ -37,6 +37,19 @@ La web llama a la API por su mismo origen, bajo `/api`, y `proxy.conf.json` reen
 `http://localhost:8080` quitando ese prefijo. No hace falta configurar CORS. Si la API usa otro puerto, cambia `target`
 en ese archivo.
 
+## Imagen de Docker
+
+El [`Dockerfile`](Dockerfile) compila la web y la sirve con nginx, que reenvía `/api` a la API quitando ese prefijo,
+igual que el proxy de desarrollo. La configuración está en
+[`nginx/default.conf.template`](nginx/default.conf.template).
+
+| Variable | Por defecto | Para qué |
+|---|---|---|
+| `API_URL` | `http://api:8080` | dirección de la API: esquema, nombre y puerto, sin ruta ni `/` final |
+
+Escucha en el puerto 8080 del contenedor. Para levantar la web junto con la API, sigue el
+[README de quipux-playlist-infra](https://github.com/leandroAmariles/quipux-playlist-infra#readme).
+
 ## Estructura
 
 | Carpeta | Contenido |
