@@ -8,10 +8,11 @@ import { HttpStatus } from '../../../core/constants/http-status';
 import { UiText } from '../../../core/constants/ui-text';
 import { ViewState } from '../../../core/constants/view-state';
 import { errorMessage, hasStatus } from '../../../core/http/error-message';
+import { RecommendationsPanel } from './recommendations/recommendations-panel';
 
 @Component({
   selector: 'app-playlist-detail-page',
-  imports: [RouterLink],
+  imports: [RouterLink, RecommendationsPanel],
   templateUrl: './playlist-detail-page.html',
   styleUrl: './playlist-detail-page.css',
 })

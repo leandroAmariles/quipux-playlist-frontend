@@ -18,7 +18,7 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const isLogin = request.url === ApiPath.LOGIN;
   const token = isLogin ? undefined : store.session()?.token;
   const outgoing = request.clone({
-    timeout: REQUEST_TIMEOUT_MS,
+    timeout: request.timeout ?? REQUEST_TIMEOUT_MS,
     setHeaders: token ? { Authorization: `Bearer ${token}` } : {},
   });
 

@@ -1,0 +1,80 @@
+{
+  "ai": {
+    "lista": "Rock",
+    "origen": "IA",
+    "versionPrompt": "v1",
+    "recomendaciones": [
+      {
+        "idCatalogo": "",
+        "titulo": "Sugerida uno",
+        "artista": "Artista X",
+        "genero": "rock",
+        "motivo": "Mismo género y época"
+      },
+      {
+        "idCatalogo": "",
+        "titulo": "Sugerida dos",
+        "artista": "Artista Y",
+        "genero": "",
+        "motivo": ""
+      }
+    ]
+  },
+  "fallback": {
+    "lista": "Rock",
+    "origen": "RESPALDO",
+    "versionPrompt": "",
+    "recomendaciones": [
+      {
+        "idCatalogo": "",
+        "titulo": "De respaldo",
+        "artista": "Artista Z",
+        "genero": "pop",
+        "motivo": "Un clásico"
+      }
+    ]
+  },
+  "empty": { "lista": "Rock", "origen": "RESPALDO", "versionPrompt": "", "recomendaciones": [] },
+  "similarity": {
+    "lista": "Rock",
+    "origen": "SIMILITUD",
+    "versionPrompt": "",
+    "recomendaciones": [
+      {
+        "idCatalogo": "cat-1",
+        "titulo": "Parecida",
+        "artista": "Artista W",
+        "genero": "rock",
+        "motivo": ""
+      }
+    ]
+  },
+  "verified": {
+    "lista": "Rock",
+    "origen": "IA",
+    "versionPrompt": "v2",
+    "recomendaciones": [
+      {
+        "idCatalogo": "cat-2",
+        "titulo": "Del catálogo",
+        "artista": "Artista V",
+        "genero": "rock",
+        "motivo": "Mismo género"
+      }
+    ]
+  },
+  "markup": {
+    "lista": "Rock",
+    "origen": "IA",
+    "versionPrompt": "v1",
+    "recomendaciones": [
+      {
+        "idCatalogo": "",
+        "titulo": "Con marcado",
+        "artista": "Artista U",
+        "genero": "rock",
+        "motivo": "<img src=x onerror=alert(1)>"
+      }
+    ]
+  }
+}

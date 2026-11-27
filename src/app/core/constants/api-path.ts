@@ -9,3 +9,7 @@ export enum ApiPath {
 export function playlistPath(name: string): string {
   return `${ApiPath.PLAYLISTS}/${encodeURIComponent(name)}`;
 }
+
+export function recommendationsPath(name: string): string {
+  return `${playlistPath(name)}/recommendations`;
+}

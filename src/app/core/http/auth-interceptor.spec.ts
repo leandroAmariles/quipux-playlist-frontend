@@ -51,6 +51,14 @@ describe('authInterceptor', () => {
     expect(request.timeout).toBe(REQUEST_TIMEOUT_MS);
   });
 
+  it('keeps a longer time limit set by the request', () => {
+    const longer = REQUEST_TIMEOUT_MS * 3;
+
+    http.get(ApiPath.PLAYLISTS, { timeout: longer }).subscribe();
+
+    expect(backend.expectOne(ApiPath.PLAYLISTS).request.timeout).toBe(longer);
+  });
+
   it('does not add the token to the login request', () => {
     http.post(ApiPath.LOGIN, {}).subscribe();
 
