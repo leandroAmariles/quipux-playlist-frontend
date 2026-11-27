@@ -1,4 +1,4 @@
-FROM node:22.22.3-alpine AS build
+FROM node:22.23.5-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci
