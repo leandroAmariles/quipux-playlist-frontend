@@ -66,8 +66,10 @@ igual que el proxy de desarrollo. La configuración está en
 |---|---|---|
 | `API_URL` | `http://api:8080` | dirección de la API: esquema, nombre y puerto, sin ruta ni `/` final |
 
-Escucha en el puerto 8080 del contenedor. Para levantar la web junto con la API, sigue el
-[README de quipux-playlist-infra](https://github.com/leandroAmariles/quipux-playlist-infra#readme).
+Escucha en el puerto 8080 del contenedor y responde `200 OK` en `GET /` sin token como sonda HTTP para Kubernetes (sin
+afectar al enrutamiento SPA ni a `/api`). En Kubernetes, `API_URL` apunta al FQDN del `Service`
+(`http://api.quipux-playlist.svc.cluster.local:8080`) para el `resolver` de nginx. Para levantar y desplegar junto con la
+API, sigue el [README de quipux-playlist-infra](https://github.com/leandroAmariles/quipux-playlist-infra#readme).
 
 ## Integración continua
 
@@ -103,6 +105,9 @@ cambio incompatible suben el menor mientras la versión sea menor que 1.0.0. `do
    `CHANGELOG.md`. Pasa por el mismo CI que los demás.
 2. Al fusionarlo se crean el tag `vX.Y.Z` y la release, y el mismo workflow
    ([`release.yml`](.github/workflows/release.yml)) construye la imagen, la analiza con Trivy y la publica.
+3. Si la publicación en GHCR termina en verde, el trabajo `update-infra` abre o actualiza automáticamente un PR en
+   `quipux-playlist-infra` (`chore(deploy): bump frontend image to X.Y.Z`) actualizando el tag en `k8s/kustomization.yaml`
+   para que Argo CD lo despliegue tras aprobar el CI de infra. Si falla `publish`, no se abre ningún PR en infra.
 
 La imagen es `ghcr.io/leandroamariles/quipux-playlist-frontend:X.Y.Z`, para `linux/amd64` y sin etiqueta `latest`.
 
@@ -127,6 +132,9 @@ No viven en el código, así que hay que repetirlos si se recrea el repositorio.
    venza, el workflow `Release` falla: genera otro y sustituye el secreto.
 3. **Imagen pública:** tras la primera publicación, abre el paquete y usa **Package settings → Change visibility →
    Public**. En GitHub no se puede volver a privado.
+4. **Token para abrir PR en infra (`INFRA_PR_TOKEN`):** crea un PAT de grano fino limitado **exclusivamente** a
+   `leandroAmariles/quipux-playlist-infra` con **Contents** y **Pull requests** en lectura y escritura, sin permisos sobre
+   este repositorio, y guárdalo con `gh secret set INFRA_PR_TOKEN -R leandroAmariles/quipux-playlist-frontend`.
 
 ## Estructura
 
