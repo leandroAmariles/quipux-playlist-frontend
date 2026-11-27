@@ -1,8 +1,8 @@
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import problems from '../../../testing/fixtures/problems.json';
 import { HttpStatus } from '../constants/http-status';
 import { UiText } from '../constants/ui-text';
-import { errorMessage, hasStatus, problemDetail } from './error-message';
+import { errorMessage, hasStatus, problemDetail, retryAfterSeconds } from './error-message';
 
 describe('errorMessage', () => {
   it('explains a missing permission', () => {
@@ -34,5 +34,31 @@ describe('errorMessage', () => {
     expect(problemDetail(rejected)).toBe(problems.unknownGenre.detail);
     expect(problemDetail(plainText)).toBeNull();
     expect(problemDetail(new Error())).toBeNull();
+  });
+});
+
+describe('retryAfterSeconds', () => {
+  function limited(retryAfter?: string): HttpErrorResponse {
+    const headers: Record<string, string> =
+      retryAfter === undefined ? {} : { 'Retry-After': retryAfter };
+    return new HttpErrorResponse({
+      status: HttpStatus.TOO_MANY_REQUESTS,
+      headers: new HttpHeaders(headers),
+    });
+  }
+
+  it('reads the seconds to wait', () => {
+    expect(retryAfterSeconds(limited('42'))).toBe(42);
+  });
+
+  it.each([undefined, '', '0', '-5', '1.5', 'soon', 'Fri, 27 Nov 2026 10:00:00 GMT'])(
+    'ignores the header %j',
+    (retryAfter) => {
+      expect(retryAfterSeconds(limited(retryAfter))).toBeNull();
+    },
+  );
+
+  it('ignores an error that is not an HTTP response', () => {
+    expect(retryAfterSeconds(new Error())).toBeNull();
   });
 });

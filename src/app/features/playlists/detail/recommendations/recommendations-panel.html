@@ -1,0 +1,52 @@
+<section>
+  <h2>{{ text.RECOMMENDATIONS }}</h2>
+  <button
+    type="button"
+    class="recommend"
+    [disabled]="state() === viewState.LOADING"
+    (click)="request()"
+  >
+    {{ text.GET_RECOMMENDATIONS }}
+  </button>
+
+  @switch (state()) {
+    @case (viewState.LOADING) {
+      <p class="muted" role="status">{{ text.RECOMMENDATIONS_LOADING }}</p>
+    }
+    @case (viewState.ERROR) {
+      <p class="error" role="alert">{{ error() }}</p>
+    }
+    @case (viewState.READY) {
+      @if (result(); as current) {
+        <p>{{ originTexts[current.origin] }}</p>
+        @if (unverified()) {
+          <p class="muted">{{ text.UNVERIFIED_RECOMMENDATIONS }}</p>
+        }
+        @if (current.items.length) {
+          <table class="card">
+            <thead>
+              <tr>
+                <th>{{ text.SONG_TITLE }}</th>
+                <th>{{ text.ARTIST }}</th>
+                <th>{{ text.GENRE }}</th>
+                <th>{{ text.REASON }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of current.items; track $index) {
+                <tr>
+                  <td>{{ item.title }}</td>
+                  <td>{{ item.artist }}</td>
+                  <td>{{ item.genre || text.MISSING_VALUE }}</td>
+                  <td>{{ item.reason || text.MISSING_VALUE }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        } @else {
+          <p class="muted">{{ text.NO_RECOMMENDATIONS }}</p>
+        }
+      }
+    }
+  }
+</section>
