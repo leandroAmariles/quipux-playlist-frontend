@@ -1,10 +1,28 @@
 # quipux-playlist-frontend
 
-Aplicación web Angular para gestionar listas de reproducción de música: iniciar sesión, ver las listas y su detalle y,
-con el rol `ADMIN`, crearlas y borrarlas.
+Aplicación web Angular para gestionar listas de reproducción de música: iniciar sesión, ver las listas y su detalle,
+pedir recomendaciones para una lista y, con el rol `ADMIN`, crearlas y borrarlas.
 
 La documentación del proyecto está en [quipux-playlist-backend](https://github.com/leandroAmariles/quipux-playlist-backend).
-La especificación de esta aplicación está en [`specs/05-web-app/`](specs/05-web-app/).
+La especificación de esta aplicación está en [`specs/05-web-app/`](specs/05-web-app/) y la de las recomendaciones en
+[`specs/14-web-recommendations/`](specs/14-web-recommendations/). El uso de IA en estas últimas está en
+[`AI-LOG.md`](AI-LOG.md).
+
+## Recomendaciones
+
+En el detalle de una lista, **Ver recomendaciones** pide sugerencias a la API y dice de dónde vienen:
+
+| Origen | Significado |
+|---|---|
+| `IA` | las generó el modelo; sin catálogo, no están verificadas |
+| `RESPALDO` | lista fija de la API: IA desactivada o sin respuesta, o lista sin canciones |
+| `SIMILITUD` | elegidas del catálogo; la API todavía no lo produce |
+
+La API limita las peticiones por usuario; al superarlo, la web indica cuántos segundos esperar.
+
+La web espera la respuesta hasta 35 segundos, porque la API aguarda al modelo hasta 30 (`AI_TIMEOUT`). Si se sube ese
+valor, hay que subir también `RECOMMENDATIONS_TIMEOUT_MS` en
+[`settings.ts`](src/app/core/constants/settings.ts). El resto de las peticiones se abandona a los 10 segundos.
 
 ## Requisitos
 
