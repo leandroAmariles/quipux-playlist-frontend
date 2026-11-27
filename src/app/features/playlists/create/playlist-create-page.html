@@ -1,0 +1,68 @@
+<a [routerLink]="route.PLAYLISTS">{{ text.BACK_TO_PLAYLISTS }}</a>
+<h1>{{ text.NEW_PLAYLIST_TITLE }}</h1>
+
+<form class="card" [formGroup]="form" (ngSubmit)="save()" novalidate>
+  <label>
+    {{ text.NAME }}
+    <input type="text" formControlName="name" />
+  </label>
+  @if (attempted() && form.controls.name.invalid) {
+    <p class="error">{{ text.NAME_REQUIRED }}</p>
+  }
+
+  <label>
+    {{ text.DESCRIPTION }}
+    <textarea formControlName="description" rows="3"></textarea>
+  </label>
+
+  <h2>{{ text.SONGS }}</h2>
+  @if (genreState() === viewState.ERROR) {
+    <p class="error" role="alert">{{ text.GENRES_UNAVAILABLE }}</p>
+    <button type="button" class="secondary retry-genres" (click)="loadGenres()">
+      {{ text.RETRY }}
+    </button>
+  }
+
+  <div class="songs">
+    @for (song of form.controls.songs.controls; track song) {
+      <fieldset class="song" [formGroup]="song">
+        <legend>{{ text.SONG }} {{ $index + 1 }}</legend>
+        <label>
+          {{ text.SONG_TITLE }}
+          <input type="text" formControlName="title" />
+        </label>
+        <label>
+          {{ text.ARTIST }}
+          <input type="text" formControlName="artist" />
+        </label>
+        <label>
+          {{ text.ALBUM }}
+          <input type="text" formControlName="album" />
+        </label>
+        <label>
+          {{ text.YEAR }}
+          <input type="text" formControlName="year" />
+        </label>
+        <label>
+          {{ text.GENRE }}
+          <select formControlName="genre">
+            <option value="">{{ text.NO_GENRE }}</option>
+            @for (genre of genres(); track genre) {
+              <option [value]="genre">{{ genre }}</option>
+            }
+          </select>
+        </label>
+        <button type="button" class="danger remove-song" (click)="removeSong($index)">
+          {{ text.REMOVE_SONG }}
+        </button>
+      </fieldset>
+    }
+  </div>
+  <button type="button" class="secondary add-song" (click)="addSong()">{{ text.ADD_SONG }}</button>
+
+  @if (error(); as failure) {
+    <p class="error" role="alert">{{ failure.message }} {{ failure.detail }}</p>
+  }
+
+  <button type="submit" [disabled]="saving()">{{ text.SAVE }}</button>
+</form>

@@ -1,0 +1,10 @@
+<header>
+  <strong>{{ text.APP_TITLE }}</strong>
+  @if (session(); as current) {
+    <span class="user">{{ current.username }}</span>
+    <button type="button" class="secondary" (click)="logOut()">{{ text.LOG_OUT }}</button>
+  }
+</header>
+<main>
+  <router-outlet />
+</main>

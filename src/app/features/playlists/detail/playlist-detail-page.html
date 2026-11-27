@@ -1,0 +1,50 @@
+<a [routerLink]="route.PLAYLISTS">{{ text.BACK_TO_PLAYLISTS }}</a>
+
+@switch (state()) {
+  @case (viewState.LOADING) {
+    <p class="muted" role="status">{{ text.LOADING }}</p>
+  }
+  @case (viewState.NOT_FOUND) {
+    <p class="error" role="alert">{{ text.PLAYLIST_NOT_FOUND }}</p>
+  }
+  @case (viewState.ERROR) {
+    <p class="error" role="alert">{{ error() }}</p>
+    <button type="button" class="retry" (click)="load()">{{ text.RETRY }}</button>
+  }
+  @case (viewState.READY) {
+    @if (playlist(); as current) {
+      <h1>{{ current.name }}</h1>
+      @if (current.description) {
+        <p>{{ current.description }}</p>
+      }
+
+      <h2>{{ text.SONGS }}</h2>
+      @if (current.songs.length) {
+        <table class="card">
+          <thead>
+            <tr>
+              <th>{{ text.SONG_TITLE }}</th>
+              <th>{{ text.ARTIST }}</th>
+              <th>{{ text.ALBUM }}</th>
+              <th>{{ text.YEAR }}</th>
+              <th>{{ text.GENRE }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (song of current.songs; track $index) {
+              <tr>
+                <td>{{ song.title || text.MISSING_VALUE }}</td>
+                <td>{{ song.artist || text.MISSING_VALUE }}</td>
+                <td>{{ song.album || text.MISSING_VALUE }}</td>
+                <td>{{ song.year || text.MISSING_VALUE }}</td>
+                <td>{{ song.genre || text.MISSING_VALUE }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <p class="muted">{{ text.NO_SONGS }}</p>
+      }
+    }
+  }
+}

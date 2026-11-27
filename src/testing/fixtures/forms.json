@@ -1,0 +1,9 @@
+{
+  "blankValues": ["", "   ", "\t\n", " "],
+  "filledValues": ["a", " Rock ", "0"],
+  "newPlaylist": {
+    "name": " Mix ",
+    "description": "Para correr",
+    "songTitles": ["Uno", "Dos", "Tres"]
+  }
+}
