@@ -18,6 +18,7 @@ No hace falta instalar Angular CLI.
 ```bash
 npm ci           # instala las versiones del archivo de bloqueo
 npm test         # ejecuta las pruebas una vez y termina
+npm run lint     # analiza el código con ESLint
 npm start        # sirve la web en http://localhost:4200
 npm run build    # compila para producción en dist/
 ```
@@ -49,6 +50,65 @@ igual que el proxy de desarrollo. La configuración está en
 
 Escucha en el puerto 8080 del contenedor. Para levantar la web junto con la API, sigue el
 [README de quipux-playlist-infra](https://github.com/leandroAmariles/quipux-playlist-infra#readme).
+
+## Integración continua
+
+Cada PR y cada push a `main` ejecutan tres comprobaciones ([`ci.yml`](.github/workflows/ci.yml)), y `main` solo admite
+PR con las tres en verde.
+
+| Comprobación | Falla ante | En local |
+|---|---|---|
+| `build-test` | un error de compilación o una prueba | `npm run build` y `npm test` |
+| `lint` | un error de ESLint | `npm run lint` |
+| `trivy` | un secreto, o una dependencia entregada con una vulnerabilidad `HIGH` o `CRITICAL` corregible | Trivy, abajo |
+
+```bash
+trivy fs --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 .
+trivy fs --scanners secret --severity HIGH,CRITICAL --exit-code 1 --skip-dirs node_modules --skip-dirs dist .
+```
+
+Un hallazgo que no se pueda corregir se excluye de uno en uno y con su motivo: en Trivy, con un `.trivyignore.yaml`
+(campo `statement`) y `trivyignores: .trivyignore.yaml` en el paso del workflow; en ESLint, en
+[`eslint.config.js`](eslint.config.js).
+
+Si una comprobación falla porque no pudo descargar dependencias o la base de vulnerabilidades, usa
+**Re-run failed jobs**.
+
+## Versiones e imágenes
+
+[release-please](https://github.com/googleapis/release-please) calcula la versión a partir de los
+[Conventional Commits](https://www.conventionalcommits.org/es/) que llegan a `main`: `fix` sube el parche y `feat` o un
+cambio incompatible suben el menor mientras la versión sea menor que 1.0.0. `docs`, `chore`, `test`, `refactor`,
+`build` y `ci` no generan versión.
+
+1. Con cambios publicables, abre o actualiza un PR `chore(main): release X.Y.Z` con la versión en `package.json` y el
+   `CHANGELOG.md`. Pasa por el mismo CI que los demás.
+2. Al fusionarlo se crean el tag `vX.Y.Z` y la release, y el mismo workflow
+   ([`release.yml`](.github/workflows/release.yml)) construye la imagen, la analiza con Trivy y la publica.
+
+La imagen es `ghcr.io/leandroamariles/quipux-playlist-frontend:X.Y.Z`, para `linux/amd64` y sin etiqueta `latest`.
+
+- Si la publicación falla por una causa pasajera, **Re-run failed jobs** publica esa misma versión.
+- Si Trivy rechaza la imagen, esa versión se queda sin imagen: se corrige y sale en la siguiente.
+
+## Ajustes de GitHub
+
+No viven en el código, así que hay que repetirlos si se recrea el repositorio.
+
+1. **Protección de `main`:**
+
+   ```bash
+   gh api -X PUT repos/leandroAmariles/quipux-playlist-frontend/branches/main/protection \
+     --input .github/branch-protection.json
+   gh api repos/leandroAmariles/quipux-playlist-frontend/branches/main/protection
+   ```
+
+2. **Token de release-please:** en GitHub, **Settings → Developer settings → Fine-grained tokens**, crea uno limitado a
+   este repositorio con **Contents**, **Pull requests** e **Issues** en lectura y escritura. Guárdalo como secreto con
+   `gh secret set RELEASE_PLEASE_TOKEN -R leandroAmariles/quipux-playlist-frontend`, que lo pide sin mostrarlo. Cuando
+   venza, el workflow `Release` falla: genera otro y sustituye el secreto.
+3. **Imagen pública:** tras la primera publicación, abre el paquete y usa **Package settings → Change visibility →
+   Public**. En GitHub no se puede volver a privado.
 
 ## Estructura
 
